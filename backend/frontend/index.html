@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能选片助手 - 云端版</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fas fa-camera"></i>
+            <span>AI智能选片助手</span>
+            <span class="badge">云端版</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active"><i class="fas fa-home"></i> 首页</a>
+            <a href="#upload"><i class="fas fa-cloud-upload-alt"></i> 上传</a>
+            <a href="#search"><i class="fas fa-search"></i> 搜索</a>
+            <a href="#docs"><i class="fas fa-book"></i> 文档</a>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 欢迎区域 -->
+        <div class="welcome-card">
+            <h1><i class="fas fa-robot"></i> 欢迎使用AI智能选片助手</h1>
+            <p>上传您的照片，AI会自动检测质量并支持语义搜索</p>
+            <div class="stats">
+                <div class="stat">
+                    <i class="fas fa-bolt"></i>
+                    <span>快速质检</span>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-brain"></i>
+                    <span>AI语义搜索</span>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-cloud"></i>
+                    <span>云端处理</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 上传区域 -->
+        <div class="card" id="upload">
+            <h2><i class="fas fa-folder-open"></i> 选择照片文件夹</h2>
+            <p class="subtitle">注意：Web版本需要上传照片，无法直接访问本地文件夹</p>
+
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt fa-3x"></i>
+                <p>拖放照片到这里，或点击选择文件</p>
+                <p class="upload-hint">支持 JPG, PNG, JPEG 格式</p>
+                <input type="file" id="fileInput" multiple accept=".jpg,.jpeg,.png,.JPG,.JPEG,.PNG">
+            </div>
+
+            <div class="upload-actions">
+                <button id="processBtn" class="btn btn-primary">
+                    <i class="fas fa-play"></i> 开始处理
+                </button>
+                <button id="clearBtn" class="btn btn-secondary">
+                    <i class="fas fa-trash"></i> 清除所有
+                </button>
+            </div>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-header">
+                    <span>处理进度</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="progress-details">
+                    <span id="progressDetails">等待开始...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果显示区域 -->
+        <div class="card">
+            <h2><i class="fas fa-chart-bar"></i> 处理结果</h2>
+            <div class="result-stats" id="resultStats">
+                <p>请先上传并处理照片</p>
+            </div>
+
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">全部照片</button>
+                <button class="filter-btn" data-filter="qualified">合格照片</button>
+                <button class="filter-btn" data-filter="defective">废片</button>
+            </div>
+
+            <div class="defect-filters">
+                <label class="filter-checkbox">
+                    <input type="checkbox" data-defect="blur" checked> 模糊
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" data-defect="overexposed" checked> 过曝
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" data-defect="underexposed" checked> 欠曝
+                </label>
+            </div>
+
+            <div class="photo-grid" id="photoGrid">
+                <!-- 照片会动态加载到这里 -->
+                <div class="empty-state">
+                    <i class="fas fa-images fa-3x"></i>
+                    <p>还没有照片，请先上传</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 语义搜索区域 -->
+        <div class="card" id="search">
+            <h2><i class="fas fa-search"></i> 语义搜索</h2>
+            <p class="subtitle">使用自然语言描述您要找的照片内容</p>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="例如：穿白色婚纱的新娘、日落海滩、微笑的孩子...">
+                <button id="searchBtn" class="btn btn-primary">
+                    <i class="fas fa-search"></i> 搜索
+                </button>
+            </div>
+
+            <div class="search-examples">
+                <span>试试这些例子：</span>
+                <button class="example-btn" data-query="穿白色婚纱的新娘">婚礼</button>
+                <button class="example-btn" data-query="日落海滩">风景</button>
+                <button class="example-btn" data-query="微笑的孩子">人像</button>
+                <button class="example-btn" data-query="红色气球">物体</button>
+            </div>
+
+            <div class="search-results" id="searchResults">
+                <div class="empty-state">
+                    <i class="fas fa-search fa-3x"></i>
+                    <p>输入搜索词开始查找照片</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- API信息 -->
+        <div class="card" id="docs">
+            <h2><i class="fas fa-code"></i> API信息</h2>
+            <div class="api-info">
+                <p><strong>后端API地址：</strong> <code id="apiUrl">正在检测...</code></p>
+                <p><strong>状态：</strong> <span id="apiStatus" class="status offline">离线</span></p>
+                <button id="testApiBtn" class="btn btn-small">
+                    <i class="fas fa-sync"></i> 测试连接
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <footer>
+        <p>© 2024 AI智能选片助手 | 云端部署版本 | 技术支持：FastAPI + CLIP + ChromaDB</p>
+        <p class="footer-links">
+            <a href="https://github.com/yourusername/ai-photo-assistant" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+            <a href="#" id="reportIssue">
+                <i class="fas fa-bug"></i> 报告问题
+            </a>
+        </p>
+    </footer>
+
+    <!-- 照片预览模态框 -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="previewImage" src="" alt="预览">
+            <div class="image-info">
+                <h3 id="imageName"></h3>
+                <p id="imageStatus"></p>
+                <p id="imageDefects"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
